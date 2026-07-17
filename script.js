@@ -237,9 +237,9 @@ function renderTravelTips(cityName) {
   const [best, bestWhy, avoid, avoidWhy, fests] = CITY_TIPS[key];
   // 미니멀 디자인: 라벨과 기간을 같은 줄에 배치해 행 수를 줄이고 폰트 확대
   // (valueHtml 은 이미 이스케이프/생성된 HTML 을 받음)
-  const row = (dot, label, valueHtml, why) => `
+  const row = (icon, label, valueHtml, why) => `
     <div class="flex items-start gap-3 py-3.5">
-      <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dot}"></span>
+      <i class="${icon} mt-1 w-4 shrink-0 text-center text-sm text-white/55"></i>
       <p class="w-[5.6rem] shrink-0 pt-0.5 text-xs font-medium tracking-wide text-white/45">${label}</p>
       <div class="min-w-0">
         <div class="text-[15px] font-bold leading-snug text-white/95">${valueHtml}</div>
@@ -260,9 +260,9 @@ function renderTravelTips(cityName) {
 
   els.travelTips.innerHTML = `
     <div class="divide-y divide-white/10">
-      ${row("bg-emerald-300/90", "가기 좋은 때", escapeHtml(best), bestWhy)}
-      ${row("bg-rose-300/90", "피하면 좋은 때", escapeHtml(avoid), avoidWhy)}
-      ${row("bg-white/60", "축제 · 이벤트", `<span class="flex flex-wrap gap-x-4 gap-y-1.5">${festLinks}</span>`, "")}
+      ${row("fa-regular fa-face-laugh-beam", "가기 좋은 때", escapeHtml(best), bestWhy)}
+      ${row("fa-regular fa-face-frown", "피하면 좋은 때", escapeHtml(avoid), avoidWhy)}
+      ${row("fa-solid fa-champagne-glasses", "축제 · 이벤트", `<span class="flex flex-wrap gap-x-4 gap-y-1.5">${festLinks}</span>`, "")}
     </div>`;
 }
 
