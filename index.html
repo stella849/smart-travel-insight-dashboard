@@ -159,35 +159,31 @@
           </div>
         </section>
 
-        <!-- 스마트 옷차림 추천 카드 -->
+        <!-- 여행 타이밍 가이드 + 옷차림 카드 -->
         <section class="glass-card card-enter rounded-3xl p-7 lg:col-span-2" style="--d:1">
+          <!-- ① 여행 타이밍 가이드 (메인) -->
+          <h3 class="mb-1 flex items-center gap-2 text-lg font-bold">
+            <i class="fa-solid fa-calendar-check text-white/80"></i> 여행 타이밍 가이드
+          </h3>
+          <p class="text-xs text-white/50">언제 가면 좋고, 언제를 피해야 할까?</p>
+          <div id="travelTips" class="mt-4 space-y-2.5"><!-- script.js 렌더링 --></div>
+
+          <div class="my-6 h-px bg-white/15"></div>
+
+          <!-- ② 스마트 옷차림 추천 (동일 레벨 제목) -->
           <h3 class="mb-1 flex items-center gap-2 text-lg font-bold">
             <i class="fa-solid fa-shirt text-white/80"></i> 스마트 옷차림 추천
           </h3>
-          <p class="text-xs text-white/50">현재 기온 기반 AI 스타일 가이드</p>
+          <p class="text-xs text-white/50">현재 기온 기반 스타일 가이드</p>
 
-          <div class="mt-6 text-center">
-            <div id="outfitIcon" class="mx-auto mb-4 grid h-24 w-24 place-items-center rounded-3xl glass-chip text-5xl">👕</div>
-            <p id="outfitTitle" class="text-xl font-bold">—</p>
-            <p id="outfitDesc" class="mt-2 text-sm leading-relaxed text-white/70">도시를 검색하면 기온에 맞는 옷차림을 추천해 드려요.</p>
+          <div class="mt-4 flex items-center gap-4">
+            <div id="outfitIcon" class="grid h-16 w-16 shrink-0 place-items-center rounded-2xl glass-chip text-3xl">👕</div>
+            <div class="min-w-0">
+              <p id="outfitTitle" class="text-base font-bold">—</p>
+              <p id="outfitDesc" class="mt-1 text-xs leading-relaxed text-white/70">도시를 검색하면 기온에 맞는 옷차림을 추천해 드려요.</p>
+            </div>
           </div>
-
-          <div id="outfitTags" class="mt-5 flex flex-wrap justify-center gap-2"><!-- 추천 아이템 태그 --></div>
-
-          <!-- 여행 타이밍 가이드 (도시별 최적 시기 · 대표 축제) -->
-          <div id="travelTips" class="mt-6 hidden rounded-2xl border border-white/10 bg-white/5 p-4 text-left">
-            <p class="mb-2.5 text-xs font-bold text-white/70">
-              <i class="fa-solid fa-calendar-check mr-1"></i> 여행 타이밍 가이드
-            </p>
-            <p class="text-sm leading-relaxed">
-              <span class="mr-1 text-white/55">🗓️ 여행 최적기</span>
-              <b id="tipSeason" class="text-white">—</b>
-            </p>
-            <p class="mt-1.5 text-sm leading-relaxed">
-              <span class="mr-1 text-white/55">🎉 대표 축제</span>
-              <b id="tipFest" class="text-white">—</b>
-            </p>
-          </div>
+          <div id="outfitTags" class="mt-3 flex flex-wrap gap-2"><!-- 추천 아이템 태그 --></div>
         </section>
       </div>
 

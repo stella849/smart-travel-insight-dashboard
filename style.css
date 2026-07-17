@@ -104,7 +104,7 @@ body {
 }
 .mq {
   white-space: nowrap;
-  padding-right: 4rem;
+  padding-right: 14rem; /* 반복 문구 사이 여백 넓게 */
   font-size: clamp(2.4rem, 6.5vw, 4.5rem);
   font-weight: 800;
   letter-spacing: -0.01em;
