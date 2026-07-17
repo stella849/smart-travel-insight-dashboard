@@ -100,6 +100,7 @@ async function searchCity(city) {
     renderVideos(videos);
 
     applyTheme(weather);
+    setCityPhoto(attractions); // 도시 대표 관광지 사진 → 전체 배경
     showDashboard();
   } catch (err) {
     console.error(err);
@@ -256,6 +257,7 @@ async function getPlaces(query, city, restaurantOnly = false) {
     name: p.displayName?.text || "이름 없음",
     rating: p.rating || 0,
     reviews: p.userRatingCount || 0,
+    photoName: p.photos?.[0]?.name || null, // 배경용 고해상도 요청에 재사용
     photo: p.photos?.[0]?.name
       ? `https://places.googleapis.com/v1/${p.photos[0].name}/media?maxWidthPx=200&key=${KEYS.places}`
       : null,
@@ -377,7 +379,35 @@ function renderVideos(settled) {
 }
 
 /* ============================================================
-   7) 동적 배경 테마 — 날씨 상태 + 낮/밤
+   7) 도시 대표 사진 배경 — Places 관광지 1위 사진을 고해상도로
+   받아 전체 배경에 크로스페이드로 적용 (Ken Burns 효과 포함)
+   ============================================================ */
+function setCityPhoto(settled) {
+  const el = document.getElementById("bgPhoto");
+  const first =
+    settled.status === "fulfilled" ? settled.value.find((p) => p.photoName) : null;
+
+  if (!first) {
+    // 사진이 없으면(데모 모드 등) 서서히 걷어내고 그라데이션만 노출
+    el.classList.remove("visible");
+    return;
+  }
+
+  const url = `https://places.googleapis.com/v1/${first.photoName}/media?maxWidthPx=1920&key=${KEYS.places}`;
+  const img = new Image();
+  img.onload = () => {
+    el.classList.remove("visible");
+    // 페이드아웃 후 새 사진으로 교체 → 페이드인 (크로스페이드 느낌)
+    setTimeout(() => {
+      el.style.backgroundImage = `url("${url}")`;
+      el.classList.add("visible");
+    }, 150);
+  };
+  img.src = url;
+}
+
+/* ============================================================
+   7-1) 동적 배경 테마 — 날씨 상태 + 낮/밤
    ============================================================ */
 function applyTheme(w) {
   const groupMap = {

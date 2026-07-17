@@ -26,41 +26,80 @@ body {
   transition: --bg1 1.6s ease, --bg2 1.6s ease, --bg3 1.6s ease;
 }
 
-/* 기본(검색 전) — 딥 네이비 */
-.theme-default      { --bg1:#0f172a; --bg2:#1e293b; --bg3:#312e81; }
+/* 기본(검색 전) — 화사한 트래블 그라데이션 (하늘 → 인디고 → 선셋 핑크) */
+.theme-default      { --bg1:#0ea5e9; --bg2:#6366f1; --bg3:#f472b6; }
 
-/* 맑음 · 낮 — 청량한 하늘 + 노을빛 */
-.theme-clear-day    { --bg1:#0284c7; --bg2:#38bdf8; --bg3:#fbbf24; }
-/* 맑음 · 밤 — 별이 보일 듯한 미드나잇 퍼플 */
-.theme-clear-night  { --bg1:#0f0c29; --bg2:#302b63; --bg3:#24243e; }
+/* 맑음 · 낮 — 쨍한 하늘색 + 골든아워 */
+.theme-clear-day    { --bg1:#0ea5e9; --bg2:#22d3ee; --bg3:#f59e0b; }
+/* 맑음 · 밤 — 별이 빛나는 바이올렛 나이트 */
+.theme-clear-night  { --bg1:#1e1b4b; --bg2:#7c3aed; --bg3:#0f172a; }
 
-/* 구름 · 낮 — 부드러운 그레이 블루 */
-.theme-clouds-day   { --bg1:#475569; --bg2:#64748b; --bg3:#94a3b8; }
+/* 구름 · 낮 — 밝은 실버 블루 */
+.theme-clouds-day   { --bg1:#60a5fa; --bg2:#94a3b8; --bg3:#cbd5e1; }
 /* 구름 · 밤 */
-.theme-clouds-night { --bg1:#1e293b; --bg2:#334155; --bg3:#475569; }
+.theme-clouds-night { --bg1:#334155; --bg2:#64748b; --bg3:#818cf8; }
 
-/* 비 — 차분한 딥 블루 그레이 */
-.theme-rain-day     { --bg1:#334155; --bg2:#1e40af; --bg3:#0f172a; }
-.theme-rain-night   { --bg1:#0f172a; --bg2:#1e3a8a; --bg3:#020617; }
+/* 비 — 청량한 틸 & 딥 블루 */
+.theme-rain-day     { --bg1:#0e7490; --bg2:#2563eb; --bg3:#334155; }
+.theme-rain-night   { --bg1:#164e63; --bg2:#1e40af; --bg3:#0f172a; }
 
-/* 눈 — 아이시 파스텔 */
-.theme-snow-day     { --bg1:#7dd3fc; --bg2:#bae6fd; --bg3:#e0e7ff; }
-.theme-snow-night   { --bg1:#475569; --bg2:#818cf8; --bg3:#c7d2fe; }
+/* 눈 — 맑은 아이시 블루 */
+.theme-snow-day     { --bg1:#38bdf8; --bg2:#93c5fd; --bg3:#a5b4fc; }
+.theme-snow-night   { --bg1:#4338ca; --bg2:#818cf8; --bg3:#64748b; }
 
-/* 뇌우 — 드라마틱 퍼플 */
+/* 뇌우 — 드라마틱 일렉트릭 퍼플 */
 .theme-thunder-day,
-.theme-thunder-night { --bg1:#1e1b4b; --bg2:#4c1d95; --bg3:#111827; }
+.theme-thunder-night { --bg1:#312e81; --bg2:#a21caf; --bg3:#111827; }
 
-/* 안개/연무 — 뿌연 모노톤 */
-.theme-mist-day     { --bg1:#6b7280; --bg2:#9ca3af; --bg3:#d1d5db; }
-.theme-mist-night   { --bg1:#374151; --bg2:#4b5563; --bg3:#6b7280; }
+/* 안개/연무 — 밝은 웜 그레이 */
+.theme-mist-day     { --bg1:#94a3b8; --bg2:#a8a29e; --bg3:#cbd5e1; }
+.theme-mist-night   { --bg1:#475569; --bg2:#57534e; --bg3:#6b7280; }
+
+/* ---------- 도시 대표 사진 배경 ----------
+   Google Places 관광지 사진을 전체 배경으로 깔고,
+   그 위에 날씨 색상 틴트를 얹어 '도시 + 날씨'가 한눈에 보이게. */
+.bg-photo {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transform: scale(1.06);
+  transition: opacity 1.4s ease;
+  pointer-events: none;
+}
+.bg-photo.visible {
+  opacity: 1;
+  animation: kenburns 24s ease-in-out infinite alternate;
+}
+@keyframes kenburns {
+  from { transform: scale(1.06) translate(0, 0); }
+  to   { transform: scale(1.14) translate(-1.5%, -1%); }
+}
+
+/* 날씨 색상 틴트 — 사진이 있으면 반투명하게 물들이고,
+   없으면 body 그라데이션이 그대로 비쳐 보임 */
+.bg-tint {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--bg1) 55%, transparent) 0%,
+    color-mix(in srgb, var(--bg2) 30%, transparent) 45%,
+    color-mix(in srgb, var(--bg3) 55%, rgba(0,0,0,0.35)) 100%
+  );
+  transition: --bg1 1.6s ease, --bg2 1.6s ease, --bg3 1.6s ease;
+}
 
 /* ---------- Glassmorphism 카드 ---------- */
 .glass-card {
-  background: linear-gradient(145deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06));
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  border: 1px solid rgba(255,255,255,0.22);
+  background: linear-gradient(145deg, rgba(255,255,255,0.2), rgba(255,255,255,0.08));
+  backdrop-filter: blur(18px) saturate(170%);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+  border: 1px solid rgba(255,255,255,0.3);
   box-shadow:
     0 8px 32px rgba(0,0,0,0.25),
     inset 0 1px 0 rgba(255,255,255,0.25);
@@ -111,8 +150,8 @@ body {
   position: fixed;
   border-radius: 9999px;
   filter: blur(90px);
-  opacity: 0.35;
-  z-index: 0;
+  opacity: 0.25;
+  z-index: 2;
   pointer-events: none;
   animation: float 14s ease-in-out infinite;
 }
