@@ -236,20 +236,33 @@ function renderTravelTips(cityName) {
   }
   const [best, bestWhy, avoid, avoidWhy, fests] = CITY_TIPS[key];
   // 미니멀 디자인: 라벨과 기간을 같은 줄에 배치해 행 수를 줄이고 폰트 확대
-  const row = (dot, label, value, why) => `
+  // (valueHtml 은 이미 이스케이프/생성된 HTML 을 받음)
+  const row = (dot, label, valueHtml, why) => `
     <div class="flex items-start gap-3 py-3.5">
       <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dot}"></span>
       <p class="w-[5.6rem] shrink-0 pt-0.5 text-xs font-medium tracking-wide text-white/45">${label}</p>
       <div class="min-w-0">
-        <p class="text-[15px] font-bold leading-snug text-white/95">${escapeHtml(value)}</p>
+        <div class="text-[15px] font-bold leading-snug text-white/95">${valueHtml}</div>
         ${why ? `<p class="mt-1 text-xs leading-relaxed text-white/50">${escapeHtml(why)}</p>` : ""}
       </div>
     </div>`;
+
+  // 축제마다 '축제명 + 일정' 검색 링크 연결 → 최신 일시·장소 정보로 이동
+  const festLinks = fests
+    .split(" · ")
+    .map((f) => {
+      const name = f.replace(/\(.*?\)/g, "").trim(); // 괄호(월 정보) 제외한 축제명
+      const url = `https://www.google.com/search?q=${encodeURIComponent(name + " 일정")}`;
+      return `<a class="fest-link" href="${url}" target="_blank" rel="noopener noreferrer"
+        title="${escapeHtml(name)} 일시·장소 검색">${escapeHtml(f)}<i class="fa-solid fa-arrow-up-right-from-square"></i></a>`;
+    })
+    .join("");
+
   els.travelTips.innerHTML = `
     <div class="divide-y divide-white/10">
-      ${row("bg-emerald-300/90", "가기 좋은 때", best, bestWhy)}
-      ${row("bg-rose-300/90", "피하면 좋은 때", avoid, avoidWhy)}
-      ${row("bg-white/60", "축제 · 이벤트", fests, "")}
+      ${row("bg-emerald-300/90", "가기 좋은 때", escapeHtml(best), bestWhy)}
+      ${row("bg-rose-300/90", "피하면 좋은 때", escapeHtml(avoid), avoidWhy)}
+      ${row("bg-white/60", "축제 · 이벤트", `<span class="flex flex-wrap gap-x-4 gap-y-1.5">${festLinks}</span>`, "")}
     </div>`;
 }
 
