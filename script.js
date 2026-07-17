@@ -48,6 +48,7 @@ const els = {
   outfitDesc: $("outfitDesc"),
   outfitTags: $("outfitTags"),
   travelTips: $("travelTips"),
+  heroSpacer: $("heroSpacer"),
   forecast: $("forecastRow"),
   worldMap: $("worldMap"),
   attractions: $("attractionsList"),
@@ -63,8 +64,71 @@ let clockTimer = null; // 현지 시간 실시간 갱신 타이머
 els.form.addEventListener("submit", (e) => {
   e.preventDefault();
   const city = els.input.value.trim();
-  if (city) searchCity(city);
+  if (city) searchCity(resolveCity(city));
 });
+
+/* ============================================================
+   0) 한글 검색 지원 — 도시/나라명 한글 입력 → 영문 검색어 변환
+   지도 48개 도시(WORLD_CITIES) + 국적기 취항 도시 + 주요 국가명
+   ============================================================ */
+const CITY_ALIASES = {
+  // 국내
+  "부산": "Busan", "제주": "Jeju", "제주도": "Jeju", "인천": "Incheon", "대구": "Daegu",
+  // 일본 (국적기 취항)
+  "후쿠오카": "Fukuoka", "삿포로": "Sapporo", "나고야": "Nagoya", "오키나와": "Naha",
+  "교토": "Kyoto", "히로시마": "Hiroshima", "다카마쓰": "Takamatsu", "마쓰야마": "Matsuyama",
+  "가고시마": "Kagoshima", "구마모토": "Kumamoto", "미야자키": "Miyazaki", "오이타": "Oita",
+  "니가타": "Niigata", "센다이": "Sendai", "나가사키": "Nagasaki", "오카야마": "Okayama",
+  "시즈오카": "Shizuoka", "아사히카와": "Asahikawa",
+  // 중국·대만·홍콩·마카오
+  "광저우": "Guangzhou", "선전": "Shenzhen", "청두": "Chengdu", "시안": "Xi'an",
+  "칭다오": "Qingdao", "옌타이": "Yantai", "웨이하이": "Weihai", "다롄": "Dalian",
+  "선양": "Shenyang", "하얼빈": "Harbin", "톈진": "Tianjin", "난징": "Nanjing",
+  "항저우": "Hangzhou", "우한": "Wuhan", "창사": "Changsha", "쿤밍": "Kunming",
+  "마카오": "Macau", "가오슝": "Kaohsiung", "타이중": "Taichung",
+  // 동남아
+  "세부": "Cebu", "클락": "Angeles", "보라카이": "Boracay", "푸꾸옥": "Duong Dong", // 푸꾸옥 중심 도시 (OpenWeather 등록명)
+  "나트랑": "Nha Trang", "호치민": "Ho Chi Minh City", "하이퐁": "Haiphong", "달랏": "Da Lat",
+  "치앙마이": "Chiang Mai", "푸켓": "Phuket", "페낭": "Penang", "코타키나발루": "Kota Kinabalu",
+  "발리": "Denpasar", "프놈펜": "Phnom Penh", "씨엠립": "Siem Reap",
+  "비엔티안": "Vientiane", "루앙프라방": "Luang Prabang", "양곤": "Yangon",
+  // 중앙아시아·서남아·중동
+  "울란바토르": "Ulaanbaatar", "타슈켄트": "Tashkent", "알마티": "Almaty", "아스타나": "Astana",
+  "비슈케크": "Bishkek", "콜롬보": "Colombo", "카트만두": "Kathmandu",
+  "도하": "Doha", "아부다비": "Abu Dhabi", "텔아비브": "Tel Aviv",
+  // 유럽 (추가 취항지)
+  "프랑크푸르트": "Frankfurt", "뮌헨": "Munich", "밀라노": "Milan", "베네치아": "Venice",
+  "리스본": "Lisbon", "부다페스트": "Budapest", "바르샤바": "Warsaw", "코펜하겐": "Copenhagen",
+  "오슬로": "Oslo", "스톡홀름": "Stockholm", "헬싱키": "Helsinki", "브뤼셀": "Brussels",
+  "제네바": "Geneva", "니스": "Nice",
+  // 미주·대양주 (추가 취항지)
+  "시애틀": "Seattle", "라스베이거스": "Las Vegas", "댈러스": "Dallas", "애틀랜타": "Atlanta",
+  "보스턴": "Boston", "워싱턴": "Washington", "미니애폴리스": "Minneapolis", "디트로이트": "Detroit",
+  "괌": "Hagatna", "사이판": "Saipan", "브리즈번": "Brisbane", "케언스": "Cairns", "난디": "Nadi",
+  // 나라명 → 대표 도시
+  "한국": "Seoul", "대한민국": "Seoul", "일본": "Tokyo", "중국": "Beijing", "대만": "Taipei",
+  "태국": "Bangkok", "베트남": "Hanoi", "필리핀": "Manila", "말레이시아": "Kuala Lumpur",
+  "인도네시아": "Jakarta", "인도": "Delhi", "몽골": "Ulaanbaatar", "우즈베키스탄": "Tashkent",
+  "카타르": "Doha", "아랍에미리트": "Dubai", "튀르키예": "Istanbul", "터키": "Istanbul",
+  "프랑스": "Paris", "영국": "London", "독일": "Berlin", "이탈리아": "Rome", "스페인": "Madrid",
+  "네덜란드": "Amsterdam", "스위스": "Zurich", "오스트리아": "Vienna", "체코": "Prague",
+  "그리스": "Athens", "포르투갈": "Lisbon", "헝가리": "Budapest", "폴란드": "Warsaw",
+  "덴마크": "Copenhagen", "노르웨이": "Oslo", "스웨덴": "Stockholm", "핀란드": "Helsinki",
+  "벨기에": "Brussels", "이집트": "Cairo", "케냐": "Nairobi", "남아공": "Cape Town",
+  "미국": "New York", "캐나다": "Toronto", "멕시코": "Mexico City", "브라질": "Sao Paulo",
+  "아르헨티나": "Buenos Aires", "페루": "Lima", "호주": "Sydney", "뉴질랜드": "Auckland",
+};
+
+function resolveCity(input) {
+  const t = input.trim();
+  // ① 지도 도시의 한글명 매칭 (서울, 런던, 다낭 …)
+  const w = WORLD_CITIES.find((c) => c[0] === t);
+  if (w) return w[1];
+  // ② 취항 도시·나라명 별칭 매칭
+  if (CITY_ALIASES[t]) return CITY_ALIASES[t];
+  // ③ 그 외에는 입력 그대로 (영문 도시명 등)
+  return t;
+}
 
 // 데모 모드 배너 표시 (하나라도 키가 비어 있으면 안내)
 if (isDemo.weather || isDemo.places || isDemo.youtube) {
@@ -171,20 +235,21 @@ function renderTravelTips(cityName) {
     return;
   }
   const [best, bestWhy, avoid, avoidWhy, fests] = CITY_TIPS[key];
+  // 미니멀 디자인: 색상 박스 대신 가는 구분선 + 작은 컬러 도트
+  const row = (dot, label, value, why) => `
+    <div class="flex gap-3 py-3.5">
+      <span class="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full ${dot}"></span>
+      <div class="min-w-0">
+        <p class="text-[11px] font-medium tracking-wide text-white/45">${label}</p>
+        <p class="mt-1 text-sm font-semibold leading-snug text-white/95">${escapeHtml(value)}</p>
+        ${why ? `<p class="mt-0.5 text-xs leading-relaxed text-white/50">${escapeHtml(why)}</p>` : ""}
+      </div>
+    </div>`;
   els.travelTips.innerHTML = `
-    <div class="rounded-xl border border-emerald-300/20 bg-emerald-400/10 p-3">
-      <p class="text-[11px] font-bold text-emerald-200">🟢 가기 좋은 때</p>
-      <p class="mt-0.5 text-sm font-bold">${escapeHtml(best)}</p>
-      <p class="text-xs text-white/60">${escapeHtml(bestWhy)}</p>
-    </div>
-    <div class="rounded-xl border border-rose-300/20 bg-rose-400/10 p-3">
-      <p class="text-[11px] font-bold text-rose-200">🔴 피하면 좋은 때</p>
-      <p class="mt-0.5 text-sm font-bold">${escapeHtml(avoid)}</p>
-      <p class="text-xs text-white/60">${escapeHtml(avoidWhy)}</p>
-    </div>
-    <div class="rounded-xl border border-white/10 bg-white/5 p-3">
-      <p class="text-[11px] font-bold text-amber-200">🎉 축제 · 이벤트</p>
-      <p class="mt-0.5 text-xs leading-relaxed text-white/85">${escapeHtml(fests)}</p>
+    <div class="divide-y divide-white/10">
+      ${row("bg-emerald-300/90", "가기 좋은 때", best, bestWhy)}
+      ${row("bg-rose-300/90", "피하면 좋은 때", avoid, avoidWhy)}
+      ${row("bg-white/60", "축제 · 이벤트", fests, "")}
     </div>`;
 }
 
@@ -685,6 +750,7 @@ function showLoader() {
   els.loader.classList.remove("hidden");
   els.errorBox.classList.add("hidden");
   els.dashboard.classList.add("hidden");
+  els.heroSpacer.classList.add("hidden"); // 검색 시작 시 첫 화면 여백 제거
 }
 function showDashboard() {
   els.loader.classList.add("hidden");
