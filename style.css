@@ -1,0 +1,209 @@
+/* ============================================================
+   Smart Travel Insight Dashboard — 커스텀 스타일
+   · Glassmorphism 카드 디테일
+   · 날씨/낮밤 기반 동적 배경 테마 (부드러운 그라데이션 전환)
+   · 등장 애니메이션 & 마이크로 인터랙션
+   ============================================================ */
+
+/* ---------- 폰트 ---------- */
+body {
+  font-family: "Noto Sans KR", sans-serif;
+}
+.font-display {
+  font-family: "Outfit", "Noto Sans KR", sans-serif;
+}
+
+/* ---------- 동적 배경 테마 ----------
+   그라데이션 색상을 CSS 커스텀 프로퍼티(@property)로 등록하면
+   색상 값 자체가 transition 되어 배경이 '부드럽게' 변합니다. */
+@property --bg1 { syntax: "<color>"; inherits: true; initial-value: #0f172a; }
+@property --bg2 { syntax: "<color>"; inherits: true; initial-value: #1e293b; }
+@property --bg3 { syntax: "<color>"; inherits: true; initial-value: #312e81; }
+
+body {
+  background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 45%, var(--bg3) 100%);
+  background-attachment: fixed;
+  transition: --bg1 1.6s ease, --bg2 1.6s ease, --bg3 1.6s ease;
+}
+
+/* 기본(검색 전) — 딥 네이비 */
+.theme-default      { --bg1:#0f172a; --bg2:#1e293b; --bg3:#312e81; }
+
+/* 맑음 · 낮 — 청량한 하늘 + 노을빛 */
+.theme-clear-day    { --bg1:#0284c7; --bg2:#38bdf8; --bg3:#fbbf24; }
+/* 맑음 · 밤 — 별이 보일 듯한 미드나잇 퍼플 */
+.theme-clear-night  { --bg1:#0f0c29; --bg2:#302b63; --bg3:#24243e; }
+
+/* 구름 · 낮 — 부드러운 그레이 블루 */
+.theme-clouds-day   { --bg1:#475569; --bg2:#64748b; --bg3:#94a3b8; }
+/* 구름 · 밤 */
+.theme-clouds-night { --bg1:#1e293b; --bg2:#334155; --bg3:#475569; }
+
+/* 비 — 차분한 딥 블루 그레이 */
+.theme-rain-day     { --bg1:#334155; --bg2:#1e40af; --bg3:#0f172a; }
+.theme-rain-night   { --bg1:#0f172a; --bg2:#1e3a8a; --bg3:#020617; }
+
+/* 눈 — 아이시 파스텔 */
+.theme-snow-day     { --bg1:#7dd3fc; --bg2:#bae6fd; --bg3:#e0e7ff; }
+.theme-snow-night   { --bg1:#475569; --bg2:#818cf8; --bg3:#c7d2fe; }
+
+/* 뇌우 — 드라마틱 퍼플 */
+.theme-thunder-day,
+.theme-thunder-night { --bg1:#1e1b4b; --bg2:#4c1d95; --bg3:#111827; }
+
+/* 안개/연무 — 뿌연 모노톤 */
+.theme-mist-day     { --bg1:#6b7280; --bg2:#9ca3af; --bg3:#d1d5db; }
+.theme-mist-night   { --bg1:#374151; --bg2:#4b5563; --bg3:#6b7280; }
+
+/* ---------- Glassmorphism 카드 ---------- */
+.glass-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06));
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.22);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.25);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+.glass-card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 16px 48px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+/* 작은 유리 칩 (아이콘 배경, 뱃지 등) */
+.glass-chip {
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.18);
+}
+
+/* 추천 도시 퀵 버튼 */
+.quick-chip {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 9999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.85);
+  transition: all 0.25s ease;
+}
+.quick-chip:hover {
+  background: rgba(255,255,255,0.25);
+  transform: translateY(-2px);
+}
+
+/* ---------- 타이틀 그라데이션 텍스트 ---------- */
+.text-gradient {
+  background: linear-gradient(90deg, #fde68a, #f9a8d4, #a5b4fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------- 배경 떠다니는 블러 오브 ---------- */
+.bg-orb {
+  position: fixed;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.35;
+  z-index: 0;
+  pointer-events: none;
+  animation: float 14s ease-in-out infinite;
+}
+.orb-1 { top: -10%; left: -8%;  width: 420px; height: 420px; background: rgba(255,255,255,0.35); }
+.orb-2 { bottom: -12%; right: -6%; width: 380px; height: 380px; background: rgba(255,182,255,0.3); animation-delay: -5s; }
+.orb-3 { top: 40%; left: 55%; width: 300px; height: 300px; background: rgba(150,200,255,0.3); animation-delay: -9s; }
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(30px, -30px) scale(1.08); }
+}
+
+/* ---------- 카드 등장 애니메이션 (검색 시 순차 등장) ---------- */
+.card-enter {
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--d, 0) * 0.12s);
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- 장소/영상 리스트 아이템 ---------- */
+.place-item {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+  padding: 0.65rem;
+  border-radius: 1.1rem;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: background 0.25s ease, transform 0.25s ease;
+  text-decoration: none;
+  color: inherit;
+}
+.place-item:hover {
+  background: rgba(255,255,255,0.16);
+  transform: translateX(4px);
+}
+.place-thumb {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 0.9rem;
+  object-fit: cover;
+  background: rgba(255,255,255,0.12);
+}
+.place-thumb-fallback {
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  color: rgba(255,255,255,0.6);
+}
+
+.video-card {
+  display: block;
+  border-radius: 1.4rem;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+}
+.video-card .thumb-wrap {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: rgba(255,255,255,0.08);
+}
+.video-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.45s ease;
+}
+.video-card:hover img { transform: scale(1.07); }
+.video-card .play-badge {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 2.4rem;
+  color: rgba(255,255,255,0.9);
+  background: rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.video-card:hover .play-badge { opacity: 1; }
+
+/* ---------- 별점 ---------- */
+.stars { color: #fbbf24; letter-spacing: 1px; font-size: 0.72rem; }
+
+/* ---------- 스크롤바 (선택) ---------- */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 8px; }
