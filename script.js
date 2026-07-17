@@ -197,15 +197,15 @@ function initWorldMap() {
 initWorldMap();
 
 /* ============================================================
-   1-2) 첫 화면 배경 — 한강 야경 (다리가 보이는 뷰)
-   반포대교 달빛무지개분수: 한강 다리 야경 사진이 가장 많은 명소.
+   1-2) 첫 화면 배경 — 한국을 상징하는 경복궁
+   (대표 사진: 근정전 전경 가로 구도 — 배경에 적합함을 확인)
    Places 사진 API 로 불러오고, 데모 모드면 은하수 배경 유지
    ============================================================ */
 (async function loadKoreaDefaultPhoto() {
   if (isDemo.places) return;
   try {
-    const places = await getPlaces("반포대교 달빛무지개분수", "Seoul", false, {
-      lat: 37.5133, lon: 126.9967,
+    const places = await getPlaces("경복궁", "Seoul", false, {
+      lat: 37.5796, lon: 126.977,
     });
     setCityPhoto({ status: "fulfilled", value: places });
   } catch {
