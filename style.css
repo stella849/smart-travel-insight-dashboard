@@ -296,13 +296,23 @@ body {
   aspect-ratio: 2 / 1;
   border-radius: 1.6rem;
   overflow: hidden;
-  /* 어두운 덮개를 얇게 깔아 지도를 투명하고 가볍게 —
-     배경 사진/그라데이션이 살짝 비쳐 보이도록 */
+  /* 유리 질감 베이스 — 배경(경복궁 등)이 흐릿하게 비쳐 보임 */
+  background: rgba(2, 6, 23, 0.12);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+/* 지도 이미지는 가상 요소로 분리해 이미지만 반투명 처리
+   (도시 점들은 위 레이어라 선명하게 유지) */
+.world-map::before {
+  content: "";
+  position: absolute;
+  inset: 0;
   background:
-    linear-gradient(rgba(2, 6, 23, 0.18), rgba(2, 6, 23, 0.26)),
     url("https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1280px-Equirectangular_projection_SW.jpg")
       center / cover no-repeat;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+  opacity: 0.42;
 }
 
 /* 서울 — 여행의 출발점, 빨간 점으로 강조 */
