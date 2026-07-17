@@ -247,12 +247,15 @@ function renderTravelTips(cityName) {
       </div>
     </div>`;
 
-  // 축제마다 '축제명 + 일정' 검색 링크 연결 → 최신 일시·장소 정보로 이동
+  // 축제마다 '도시명 + 축제명 + 일정' 검색 링크 연결 → 최신 일시·장소 정보로 이동
+  // (같은 이름의 축제가 여러 나라에 있으므로 도시명을 붙여 검색 정확도 확보)
+  const cityKo = (WORLD_CITIES.find((c) => c[1] === key) || [])[0] || key;
   const festLinks = fests
     .split(" · ")
     .map((f) => {
       const name = f.replace(/\(.*?\)/g, "").trim(); // 괄호(월 정보) 제외한 축제명
-      const url = `https://www.google.com/search?q=${encodeURIComponent(name + " 일정")}`;
+      const query = name.includes(cityKo) ? `${name} 일정` : `${cityKo} ${name} 일정`;
+      const url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
       return `<a class="fest-link" href="${url}" target="_blank" rel="noopener noreferrer"
         title="${escapeHtml(name)} 일시·장소 검색">${escapeHtml(f)}<i class="fa-solid fa-arrow-up-right-from-square"></i></a>`;
     })
