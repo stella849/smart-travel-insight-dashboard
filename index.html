@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Travel Insight Dashboard</title>
+
+  <!-- Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts : Outfit(영문/숫자) + Noto Sans KR(한글) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+
+  <!-- FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <!-- 커스텀 스타일 (Glassmorphism / 동적 테마 / 애니메이션) -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="theme-default min-h-screen text-white antialiased">
+
+  <!-- 배경 장식 (떠다니는 블러 오브) -->
+  <div class="bg-orb orb-1" aria-hidden="true"></div>
+  <div class="bg-orb orb-2" aria-hidden="true"></div>
+  <div class="bg-orb orb-3" aria-hidden="true"></div>
+
+  <div class="relative z-10 mx-auto max-w-6xl px-4 pb-20 pt-10 sm:px-6">
+
+    <!-- ===================== 헤더 ===================== -->
+    <header class="mb-10 text-center">
+      <div class="mb-3 inline-flex items-center gap-3">
+        <span class="grid h-12 w-12 place-items-center rounded-2xl glass-chip text-2xl">
+          <i class="fa-solid fa-earth-asia"></i>
+        </span>
+        <h1 class="font-display text-3xl font-800 tracking-tight sm:text-4xl" style="font-weight:800">
+          Smart Travel <span class="text-gradient">Insight</span>
+        </h1>
+      </div>
+      <p class="text-sm font-light text-white/70 sm:text-base">
+        도시 하나만 검색하면 날씨 · 시차 · 옷차림 · 맛집 · 여행 영상까지, 여행 준비 끝.
+      </p>
+    </header>
+
+    <!-- ===================== 검색창 ===================== -->
+    <section class="mx-auto mb-6 max-w-xl">
+      <form id="searchForm" class="glass-card flex items-center gap-2 rounded-full p-2 pl-5" autocomplete="off">
+        <i class="fa-solid fa-magnifying-glass text-white/60"></i>
+        <input
+          id="cityInput"
+          type="text"
+          placeholder="도시 이름을 검색하세요 (예: London, Bangkok, Da Nang)"
+          class="w-full bg-transparent py-2 text-sm text-white placeholder-white/40 outline-none sm:text-base"
+        />
+        <button type="submit"
+          class="shrink-0 rounded-full bg-white/90 px-5 py-2.5 text-sm font-bold text-slate-900 transition hover:scale-105 hover:bg-white active:scale-95">
+          검색 <i class="fa-solid fa-paper-plane ml-1 text-xs"></i>
+        </button>
+      </form>
+
+      <!-- 추천 도시 퀵 버튼 -->
+      <div class="mt-3 flex flex-wrap justify-center gap-2" id="quickCities">
+        <button data-city="London"  class="quick-chip">🇬🇧 런던</button>
+        <button data-city="Bangkok" class="quick-chip">🇹🇭 방콕</button>
+        <button data-city="Da Nang" class="quick-chip">🇻🇳 다낭</button>
+        <button data-city="Paris"   class="quick-chip">🇫🇷 파리</button>
+        <button data-city="Tokyo"   class="quick-chip">🇯🇵 도쿄</button>
+        <button data-city="New York" class="quick-chip">🇺🇸 뉴욕</button>
+      </div>
+    </section>
+
+    <!-- 데모 모드 안내 배너 (API 키가 없을 때 표시) -->
+    <div id="demoBanner" class="mx-auto mb-8 hidden max-w-xl rounded-2xl border border-amber-300/30 bg-amber-400/10 px-5 py-3 text-center text-sm text-amber-100 backdrop-blur">
+      <i class="fa-solid fa-flask mr-1"></i>
+      <b>데모 모드</b> — API 키가 설정되지 않아 샘플 데이터를 표시합니다.
+      <span class="opacity-70">config.js에 키를 넣으면 실시간 데이터로 전환됩니다.</span>
+    </div>
+
+    <!-- 로딩 스피너 -->
+    <div id="loader" class="hidden py-16 text-center">
+      <i class="fa-solid fa-circle-notch fa-spin text-4xl text-white/80"></i>
+      <p class="mt-4 text-sm text-white/60">여행 데이터를 불러오는 중...</p>
+    </div>
+
+    <!-- 에러 메시지 -->
+    <div id="errorBox" class="mx-auto hidden max-w-xl rounded-2xl border border-rose-300/30 bg-rose-500/10 px-5 py-4 text-center text-sm text-rose-100 backdrop-blur"></div>
+
+    <!-- ===================== 대시보드 ===================== -->
+    <main id="dashboard" class="hidden space-y-6">
+
+      <!-- ── 1행 : 날씨/시차 + 옷차림 ── -->
+      <div class="grid gap-6 lg:grid-cols-5">
+
+        <!-- 날씨 & 현지 시간 카드 -->
+        <section class="glass-card card-enter rounded-3xl p-7 lg:col-span-3" style="--d:0">
+          <div class="flex items-start justify-between">
+            <div>
+              <h2 id="cityName" class="font-display text-2xl font-bold sm:text-3xl">—</h2>
+              <p id="countryName" class="mt-1 text-sm text-white/60">—</p>
+            </div>
+            <span class="glass-chip rounded-full px-4 py-1.5 text-xs font-medium text-white/80">
+              <i class="fa-regular fa-clock mr-1"></i>현지 시간
+            </span>
+          </div>
+
+          <!-- 현지 시간 -->
+          <div class="mt-5">
+            <p id="localTime" class="font-display text-5xl font-800 tabular-nums tracking-tight sm:text-6xl" style="font-weight:800">--:--:--</p>
+            <p id="localDate" class="mt-1 text-sm text-white/60">—</p>
+            <p id="timeDiff" class="mt-1 text-xs text-white/50">—</p>
+          </div>
+
+          <div class="my-6 h-px bg-white/15"></div>
+
+          <!-- 현재 날씨 -->
+          <div class="flex flex-wrap items-center gap-6">
+            <div class="flex items-center gap-3">
+              <span id="weatherIcon" class="text-5xl"><i class="fa-solid fa-cloud-sun"></i></span>
+              <div>
+                <p id="temperature" class="font-display text-4xl font-bold tabular-nums">--°</p>
+                <p id="weatherDesc" class="text-sm capitalize text-white/70">—</p>
+              </div>
+            </div>
+            <div class="ml-auto grid grid-cols-3 gap-4 text-center text-xs text-white/70">
+              <div class="glass-chip rounded-2xl px-3 py-2.5">
+                <i class="fa-solid fa-temperature-half mb-1 block text-base"></i>
+                체감 <b id="feelsLike" class="block text-sm text-white">--°</b>
+              </div>
+              <div class="glass-chip rounded-2xl px-3 py-2.5">
+                <i class="fa-solid fa-droplet mb-1 block text-base"></i>
+                습도 <b id="humidity" class="block text-sm text-white">--%</b>
+              </div>
+              <div class="glass-chip rounded-2xl px-3 py-2.5">
+                <i class="fa-solid fa-wind mb-1 block text-base"></i>
+                바람 <b id="wind" class="block text-sm text-white">-- m/s</b>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 스마트 옷차림 추천 카드 -->
+        <section class="glass-card card-enter rounded-3xl p-7 lg:col-span-2" style="--d:1">
+          <h3 class="mb-1 flex items-center gap-2 text-lg font-bold">
+            <i class="fa-solid fa-shirt text-white/80"></i> 스마트 옷차림 추천
+          </h3>
+          <p class="text-xs text-white/50">현재 기온 기반 AI 스타일 가이드</p>
+
+          <div class="mt-6 text-center">
+            <div id="outfitIcon" class="mx-auto mb-4 grid h-24 w-24 place-items-center rounded-3xl glass-chip text-5xl">👕</div>
+            <p id="outfitTitle" class="text-xl font-bold">—</p>
+            <p id="outfitDesc" class="mt-2 text-sm leading-relaxed text-white/70">도시를 검색하면 기온에 맞는 옷차림을 추천해 드려요.</p>
+          </div>
+
+          <div id="outfitTags" class="mt-5 flex flex-wrap justify-center gap-2"><!-- 추천 아이템 태그 --></div>
+        </section>
+      </div>
+
+      <!-- ── 2행 : 로컬 핫플레이스 ── -->
+      <section class="card-enter" style="--d:2">
+        <h3 class="mb-4 flex items-center gap-2 text-xl font-bold">
+          <i class="fa-solid fa-location-dot text-white/80"></i> 로컬 핫플레이스
+          <span class="glass-chip rounded-full px-3 py-1 text-[11px] font-medium text-white/70">Google Places</span>
+        </h3>
+
+        <div class="grid gap-6 md:grid-cols-2">
+          <!-- 유명 관광지 -->
+          <div class="glass-card rounded-3xl p-6">
+            <h4 class="mb-4 flex items-center gap-2 text-sm font-bold text-white/90">
+              <i class="fa-solid fa-camera-retro"></i> 유명 관광지
+            </h4>
+            <div id="attractionsList" class="space-y-3"><!-- 관광지 카드 --></div>
+          </div>
+
+          <!-- 검증된 맛집 -->
+          <div class="glass-card rounded-3xl p-6">
+            <h4 class="mb-4 flex items-center gap-2 text-sm font-bold text-white/90">
+              <i class="fa-solid fa-utensils"></i> 검증된 맛집
+              <span class="rounded-full bg-emerald-400/20 px-2.5 py-0.5 text-[11px] font-bold text-emerald-200">★ 4.0+</span>
+            </h4>
+            <div id="restaurantsList" class="space-y-3"><!-- 맛집 카드 --></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── 3행 : 트렌딩 여행 영상 ── -->
+      <section class="card-enter" style="--d:3">
+        <h3 class="mb-4 flex items-center gap-2 text-xl font-bold">
+          <i class="fa-brands fa-youtube text-red-400"></i> 트렌딩 여행 영상
+          <span class="glass-chip rounded-full px-3 py-1 text-[11px] font-medium text-white/70">YouTube Data API</span>
+        </h3>
+        <div id="videosList" class="grid gap-6 sm:grid-cols-3"><!-- 영상 카드 --></div>
+      </section>
+    </main>
+
+    <!-- ===================== 푸터 ===================== -->
+    <footer class="mt-16 text-center text-xs text-white/40">
+      <p>Smart Travel Insight Dashboard · OpenWeatherMap + Google Places + YouTube Data API v3</p>
+      <p class="mt-1">Git 버전 관리 및 멀티 API 연동 과제 · Made with <i class="fa-solid fa-heart text-rose-300/60"></i></p>
+    </footer>
+  </div>
+
+  <!--
+    ⚠️ config.js 는 .gitignore 에 등록되어 깃허브에 올라가지 않습니다.
+    config.example.js 를 복사해 config.js 를 만들고 본인의 API 키를 입력하세요.
+    (config.js 가 없으면 자동으로 데모 모드로 동작합니다.)
+  -->
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
