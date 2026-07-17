@@ -315,10 +315,15 @@ function starBar(rating) {
 async function getVideos(cityLabel, city) {
   if (isDemo.youtube) return mockVideos(city);
 
+  // 📅 선별 기준: 최근 6개월 이내 업로드된 영상만 (publishedAfter, RFC3339)
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
   const url =
     `https://www.googleapis.com/youtube/v3/search` +
     `?part=snippet&type=video&maxResults=3&safeSearch=moderate` +
     `&q=${encodeURIComponent(cityLabel + " 여행 브이로그")}` +
+    `&publishedAfter=${encodeURIComponent(sixMonthsAgo.toISOString())}` +
     `&relevanceLanguage=ko&key=${KEYS.youtube}`;
 
   const res = await fetch(url);
