@@ -36,8 +36,21 @@
 
   <div class="relative z-10 mx-auto max-w-6xl px-4 pb-20 pt-10 sm:px-6">
 
-    <!-- ===================== 히어로 소개 문구 ===================== -->
-    <p class="hero-line font-display">Where to next?</p>
+    <!-- ===================== 히어로 마퀴 (무한 스크롤 대형 타이포) ===================== -->
+    <div class="hero-marquee font-display" aria-label="Where to next?">
+      <div class="marquee-track">
+        <!-- 절반 1 (채움/아웃라인 교차) -->
+        <span class="mq">Where to next?</span>
+        <span class="mq outline">Where to next?</span>
+        <span class="mq">Where to next?</span>
+        <span class="mq outline">Where to next?</span>
+        <!-- 절반 2 (동일 반복 → -50% 이동으로 무한 루프) -->
+        <span class="mq" aria-hidden="true">Where to next?</span>
+        <span class="mq outline" aria-hidden="true">Where to next?</span>
+        <span class="mq" aria-hidden="true">Where to next?</span>
+        <span class="mq outline" aria-hidden="true">Where to next?</span>
+      </div>
+    </div>
 
     <!-- ===================== 인터랙티브 세계지도 ===================== -->
     <section class="mx-auto mb-6 max-w-6xl">

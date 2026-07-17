@@ -85,16 +85,40 @@ body {
   to   { filter: brightness(1.15); }
 }
 
-/* ---------- 히어로 소개 문구 ---------- */
-.hero-line {
-  text-align: center;
-  font-size: clamp(1.7rem, 4.2vw, 2.8rem);
-  font-weight: 300;
-  letter-spacing: 0.04em;
+/* ---------- 히어로 마퀴 (무한 스크롤 대형 타이포) ----------
+   같은 문구 2세트를 이어 붙이고 -50% 만큼 이동시켜 끊김 없이 순환.
+   양쪽 끝은 마스크로 페이드아웃 → 글자가 스르륵 나타났다 사라짐. */
+.hero-marquee {
+  overflow: hidden;
+  margin: 0.4rem 0 2rem;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 15%, #000 85%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, #000 15%, #000 85%, transparent 100%);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 22s linear infinite;
+}
+.hero-marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+.mq {
+  white-space: nowrap;
+  padding-right: 4rem;
+  font-size: clamp(2.4rem, 6.5vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
   color: rgba(255, 255, 255, 0.95);
-  text-shadow: 0 0 24px rgba(165, 180, 252, 0.35);
-  margin-bottom: 1.6rem;
-  animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  text-shadow: 0 0 30px rgba(165, 180, 252, 0.3);
+}
+/* 테두리만 있는 아웃라인 타이포 (채움과 교차 배치) */
+.mq.outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.65);
+  text-shadow: none;
+}
+@keyframes marquee {
+  to { transform: translateX(-50%); }
 }
 
 /* ---------- 도시 대표 사진 배경 ----------
