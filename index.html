@@ -34,23 +34,8 @@
 
   <div class="relative z-10 mx-auto max-w-6xl px-4 pb-20 pt-10 sm:px-6">
 
-    <!-- ===================== 헤더 ===================== -->
-    <header class="mb-10 text-center">
-      <div class="mb-3 inline-flex items-center gap-3">
-        <span class="grid h-12 w-12 place-items-center rounded-2xl glass-chip text-2xl">
-          <i class="fa-solid fa-earth-asia"></i>
-        </span>
-        <h1 class="font-display text-3xl font-800 tracking-tight sm:text-4xl" style="font-weight:800">
-          Smart Travel <span class="text-gradient">Insight</span>
-        </h1>
-      </div>
-      <p class="text-sm font-light text-white/70 sm:text-base">
-        도시 하나만 검색하면 날씨 · 시차 · 옷차림 · 맛집 · 여행 영상까지, 여행 준비 끝.
-      </p>
-    </header>
-
     <!-- ===================== 검색창 ===================== -->
-    <section class="mx-auto mb-6 max-w-xl">
+    <section class="mx-auto mb-8 max-w-xl">
       <form id="searchForm" class="glass-card flex items-center gap-2 rounded-full p-2 pl-5" autocomplete="off">
         <i class="fa-solid fa-magnifying-glass text-white/60"></i>
         <input
@@ -64,33 +49,17 @@
           검색 <i class="fa-solid fa-paper-plane ml-1 text-xs"></i>
         </button>
       </form>
-
-      <!-- 추천 도시 퀵 버튼 -->
-      <div class="mt-3 flex flex-wrap justify-center gap-2" id="quickCities">
-        <button data-city="London"  class="quick-chip">🇬🇧 런던</button>
-        <button data-city="Bangkok" class="quick-chip">🇹🇭 방콕</button>
-        <button data-city="Da Nang" class="quick-chip">🇻🇳 다낭</button>
-        <button data-city="Paris"   class="quick-chip">🇫🇷 파리</button>
-        <button data-city="Tokyo"   class="quick-chip">🇯🇵 도쿄</button>
-        <button data-city="New York" class="quick-chip">🇺🇸 뉴욕</button>
-      </div>
     </section>
 
     <!-- ===================== 인터랙티브 세계지도 ===================== -->
-    <section class="mx-auto mb-8 max-w-4xl">
-      <div class="glass-card rounded-3xl p-4 sm:p-5">
-        <div class="mb-3 flex flex-wrap items-center justify-between gap-2 px-1">
-          <h3 class="flex items-center gap-2 text-sm font-bold">
-            <i class="fa-solid fa-map-location-dot text-white/80"></i> 월드맵에서 바로 선택
-          </h3>
-          <span class="text-[11px] text-white/50">
-            <span class="mr-1 inline-block h-2 w-2 rounded-full bg-amber-300 align-middle"></span>
-            점을 클릭하면 해당 도시를 검색합니다
-          </span>
-        </div>
-        <!-- 도시 점(dot)은 script.js 에서 위도/경도 → % 좌표로 동적 생성 -->
-        <div id="worldMap" class="world-map" role="group" aria-label="세계 주요 도시 지도"></div>
-      </div>
+    <section class="mx-auto mb-10 max-w-6xl">
+      <!-- 도시 점(dot)은 script.js 에서 위도/경도 → % 좌표로 동적 생성 -->
+      <div id="worldMap" class="world-map" role="group" aria-label="세계 주요 도시 지도"></div>
+      <p class="mt-2 pr-2 text-right text-[11px] text-white/50">
+        <span class="mr-1 inline-block h-2 w-2 rounded-full bg-red-500 align-middle"></span>서울
+        <span class="mx-1 text-white/30">·</span>
+        <span class="mr-1 inline-block h-2 w-2 rounded-full bg-amber-300 align-middle"></span>점을 클릭하면 해당 도시를 검색합니다
+      </p>
     </section>
 
     <!-- 데모 모드 안내 배너 (API 키가 없을 때 표시) -->

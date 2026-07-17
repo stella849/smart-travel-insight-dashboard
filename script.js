@@ -28,7 +28,6 @@ const $ = (id) => document.getElementById(id);
 const els = {
   form: $("searchForm"),
   input: $("cityInput"),
-  quick: $("quickCities"),
   banner: $("demoBanner"),
   loader: $("loader"),
   errorBox: $("errorBox"),
@@ -64,13 +63,6 @@ els.form.addEventListener("submit", (e) => {
   e.preventDefault();
   const city = els.input.value.trim();
   if (city) searchCity(city);
-});
-
-els.quick.addEventListener("click", (e) => {
-  const btn = e.target.closest("[data-city]");
-  if (!btn) return;
-  els.input.value = btn.dataset.city;
-  searchCity(btn.dataset.city);
 });
 
 // 데모 모드 배너 표시 (하나라도 키가 비어 있으면 안내)
@@ -118,7 +110,8 @@ function initWorldMap() {
   els.worldMap.innerHTML = WORLD_CITIES.map(([ko, en, lat, lon]) => {
     const x = (((lon + 180) / 360) * 100).toFixed(2);
     const y = (((90 - lat) / 180) * 100).toFixed(2);
-    return `<button class="city-dot" style="left:${x}%;top:${y}%"
+    const cls = en === "Seoul" ? "city-dot dot-seoul" : "city-dot"; // 서울은 빨간 점
+    return `<button class="${cls}" style="left:${x}%;top:${y}%"
       data-city="${escapeHtml(en)}" aria-label="${ko} 날씨 검색">
       <span class="dot-label">${ko}</span>
     </button>`;
@@ -134,13 +127,13 @@ function initWorldMap() {
 initWorldMap();
 
 /* ============================================================
-   1-2) 첫 화면 배경 — 한국을 상징하는 이미지 (경복궁)
+   1-2) 첫 화면 배경 — 한국을 상징하는 이미지 (남산서울타워)
    Places 사진 API 로 불러오고, 데모 모드면 그라데이션 유지
    ============================================================ */
 (async function loadKoreaDefaultPhoto() {
   if (isDemo.places) return;
   try {
-    const places = await getPlaces("경복궁 서울", "Seoul");
+    const places = await getPlaces("남산서울타워", "Seoul");
     setCityPhoto({ status: "fulfilled", value: places });
   } catch {
     /* 실패해도 기본 그라데이션이 있으므로 무시 */

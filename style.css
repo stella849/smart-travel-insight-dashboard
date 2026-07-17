@@ -120,23 +120,6 @@ body {
   border: 1px solid rgba(255,255,255,0.18);
 }
 
-/* 추천 도시 퀵 버튼 */
-.quick-chip {
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.16);
-  border-radius: 9999px;
-  padding: 0.35rem 0.9rem;
-  font-size: 0.78rem;
-  color: rgba(255,255,255,0.85);
-  transition: all 0.25s ease;
-}
-.quick-chip:hover {
-  background: rgba(255,255,255,0.25);
-  transform: translateY(-2px);
-}
-
 /* ---------- 타이틀 그라데이션 텍스트 ---------- */
 .text-gradient {
   background: linear-gradient(90deg, #fde68a, #f9a8d4, #a5b4fc);
@@ -245,13 +228,29 @@ body {
 .world-map {
   position: relative;
   aspect-ratio: 2 / 1;
-  border-radius: 1.2rem;
+  border-radius: 1.6rem;
   overflow: hidden;
+  /* 어두운 덮개를 얇게 깔아 지도를 투명하고 가볍게 —
+     배경 사진/그라데이션이 살짝 비쳐 보이도록 */
   background:
-    linear-gradient(rgba(2, 6, 23, 0.5), rgba(2, 6, 23, 0.35)),
+    linear-gradient(rgba(2, 6, 23, 0.18), rgba(2, 6, 23, 0.26)),
     url("https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1280px-Equirectangular_projection_SW.jpg")
       center / cover no-repeat;
-  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+
+/* 서울 — 여행의 출발점, 빨간 점으로 강조 */
+.city-dot.dot-seoul::before {
+  inset: 4px;
+  background: #ef4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.95), 0 0 18px rgba(239, 68, 68, 0.5);
+}
+.city-dot.dot-seoul::after {
+  border-color: rgba(239, 68, 68, 0.65);
+}
+.city-dot.dot-seoul:hover::before,
+.city-dot.dot-seoul:focus-visible::before {
+  background: #ffffff;
 }
 
 .city-dot {
