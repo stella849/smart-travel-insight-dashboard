@@ -26,8 +26,8 @@ body {
   transition: --bg1 1.6s ease, --bg2 1.6s ease, --bg3 1.6s ease;
 }
 
-/* 기본(검색 전) — 화사한 트래블 그라데이션 (하늘 → 인디고 → 선셋 핑크) */
-.theme-default      { --bg1:#0ea5e9; --bg2:#6366f1; --bg3:#f472b6; }
+/* 기본(검색 전) — 딥 블랙 + 은하수 (별빛 레이어 .bg-stars 와 세트) */
+.theme-default      { --bg1:#020617; --bg2:#0b1026; --bg3:#1e1b4b; }
 
 /* 맑음 · 낮 — 쨍한 하늘색 + 골든아워 */
 .theme-clear-day    { --bg1:#0ea5e9; --bg2:#22d3ee; --bg3:#f59e0b; }
@@ -54,6 +54,48 @@ body {
 /* 안개/연무 — 밝은 웜 그레이 */
 .theme-mist-day     { --bg1:#94a3b8; --bg2:#a8a29e; --bg3:#cbd5e1; }
 .theme-mist-night   { --bg1:#475569; --bg2:#57534e; --bg3:#6b7280; }
+
+/* ---------- 은하수 별빛 레이어 (첫 화면 전용) ----------
+   작은 별 4겹(타일 반복) + 은하수 성운 띠 2겹.
+   theme-default(검색 전)일 때만 서서히 나타남. */
+.bg-stars {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+  background-image:
+    /* 성운 띠 (보랏빛 은하수) */
+    radial-gradient(ellipse 70% 45% at 68% 18%, rgba(139, 92, 246, 0.16), transparent 70%),
+    radial-gradient(ellipse 55% 38% at 22% 78%, rgba(56, 189, 248, 0.10), transparent 70%),
+    /* 별 타일 (반복) */
+    radial-gradient(1.6px 1.6px at 40px 60px, rgba(255,255,255,0.95), transparent 55%),
+    radial-gradient(1px 1px at 150px 140px, rgba(255,255,255,0.7), transparent 55%),
+    radial-gradient(1.2px 1.2px at 260px 40px, rgba(255,255,255,0.85), transparent 55%),
+    radial-gradient(1px 1px at 330px 200px, rgba(255,255,255,0.55), transparent 55%),
+    radial-gradient(0.8px 0.8px at 90px 230px, rgba(255,255,255,0.5), transparent 55%);
+  background-size: 100% 100%, 100% 100%, 380px 260px, 380px 260px, 380px 260px, 380px 260px, 380px 260px;
+  background-repeat: no-repeat, no-repeat, repeat, repeat, repeat, repeat, repeat;
+  animation: twinkle 6s ease-in-out infinite alternate;
+}
+.theme-default .bg-stars { opacity: 1; }
+@keyframes twinkle {
+  from { filter: brightness(0.85); }
+  to   { filter: brightness(1.15); }
+}
+
+/* ---------- 히어로 소개 문구 ---------- */
+.hero-line {
+  text-align: center;
+  font-size: clamp(1.7rem, 4.2vw, 2.8rem);
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 0 24px rgba(165, 180, 252, 0.35);
+  margin-bottom: 1.6rem;
+  animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
 
 /* ---------- 도시 대표 사진 배경 ----------
    Google Places 관광지 사진을 전체 배경으로 깔고,

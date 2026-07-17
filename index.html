@@ -22,6 +22,8 @@
 
 <body class="theme-default min-h-screen text-white antialiased">
 
+  <!-- 은하수 별빛 배경 (첫 화면 기본 테마에서만 표시) -->
+  <div class="bg-stars" aria-hidden="true"></div>
   <!-- 도시 대표 사진 배경 (Google Places 사진 → 검색 시 크로스페이드) -->
   <div id="bgPhoto" class="bg-photo" aria-hidden="true"></div>
   <!-- 날씨 색상 틴트 (사진 위에 얹는 반투명 그라데이션) -->
@@ -34,8 +36,22 @@
 
   <div class="relative z-10 mx-auto max-w-6xl px-4 pb-20 pt-10 sm:px-6">
 
-    <!-- ===================== 검색창 ===================== -->
-    <section class="mx-auto mb-8 max-w-xl">
+    <!-- ===================== 히어로 소개 문구 ===================== -->
+    <p class="hero-line font-display">Where to next?</p>
+
+    <!-- ===================== 인터랙티브 세계지도 ===================== -->
+    <section class="mx-auto mb-6 max-w-6xl">
+      <!-- 도시 점(dot)은 script.js 에서 위도/경도 → % 좌표로 동적 생성 -->
+      <div id="worldMap" class="world-map" role="group" aria-label="세계 주요 도시 지도"></div>
+      <p class="mt-2 pr-2 text-right text-[11px] text-white/50">
+        <span class="mr-1 inline-block h-2 w-2 rounded-full bg-red-500 align-middle"></span>서울
+        <span class="mx-1 text-white/30">·</span>
+        <span class="mr-1 inline-block h-2 w-2 rounded-full bg-amber-300 align-middle"></span>점을 클릭하면 해당 도시를 검색합니다
+      </p>
+    </section>
+
+    <!-- ===================== 검색창 (지도 아래) ===================== -->
+    <section class="mx-auto mb-10 max-w-xl">
       <form id="searchForm" class="glass-card flex items-center gap-2 rounded-full p-2 pl-5" autocomplete="off">
         <i class="fa-solid fa-magnifying-glass text-white/60"></i>
         <input
@@ -49,17 +65,6 @@
           검색 <i class="fa-solid fa-paper-plane ml-1 text-xs"></i>
         </button>
       </form>
-    </section>
-
-    <!-- ===================== 인터랙티브 세계지도 ===================== -->
-    <section class="mx-auto mb-10 max-w-6xl">
-      <!-- 도시 점(dot)은 script.js 에서 위도/경도 → % 좌표로 동적 생성 -->
-      <div id="worldMap" class="world-map" role="group" aria-label="세계 주요 도시 지도"></div>
-      <p class="mt-2 pr-2 text-right text-[11px] text-white/50">
-        <span class="mr-1 inline-block h-2 w-2 rounded-full bg-red-500 align-middle"></span>서울
-        <span class="mx-1 text-white/30">·</span>
-        <span class="mr-1 inline-block h-2 w-2 rounded-full bg-amber-300 align-middle"></span>점을 클릭하면 해당 도시를 검색합니다
-      </p>
     </section>
 
     <!-- 데모 모드 안내 배너 (API 키가 없을 때 표시) -->
@@ -155,6 +160,21 @@
           </div>
 
           <div id="outfitTags" class="mt-5 flex flex-wrap justify-center gap-2"><!-- 추천 아이템 태그 --></div>
+
+          <!-- 여행 타이밍 가이드 (도시별 최적 시기 · 대표 축제) -->
+          <div id="travelTips" class="mt-6 hidden rounded-2xl border border-white/10 bg-white/5 p-4 text-left">
+            <p class="mb-2.5 text-xs font-bold text-white/70">
+              <i class="fa-solid fa-calendar-check mr-1"></i> 여행 타이밍 가이드
+            </p>
+            <p class="text-sm leading-relaxed">
+              <span class="mr-1 text-white/55">🗓️ 여행 최적기</span>
+              <b id="tipSeason" class="text-white">—</b>
+            </p>
+            <p class="mt-1.5 text-sm leading-relaxed">
+              <span class="mr-1 text-white/55">🎉 대표 축제</span>
+              <b id="tipFest" class="text-white">—</b>
+            </p>
+          </div>
         </section>
       </div>
 

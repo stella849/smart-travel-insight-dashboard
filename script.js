@@ -47,6 +47,9 @@ const els = {
   outfitTitle: $("outfitTitle"),
   outfitDesc: $("outfitDesc"),
   outfitTags: $("outfitTags"),
+  travelTips: $("travelTips"),
+  tipSeason: $("tipSeason"),
+  tipFest: $("tipFest"),
   forecast: $("forecastRow"),
   worldMap: $("worldMap"),
   attractions: $("attractionsList"),
@@ -106,6 +109,73 @@ const WORLD_CITIES = [
   ["리우데자네이루", "Rio de Janeiro", -22.91, -43.17], ["리마", "Lima", -12.05, -77.04],
 ];
 
+/* 도시별 여행 최적기 · 대표 축제 (옷차림 카드의 '여행 타이밍 가이드') */
+const CITY_TIPS = {
+  "Seoul": ["4~5월 (봄꽃) · 9~10월 (단풍)", "서울세계불꽃축제 (10월)"],
+  "Tokyo": ["3월 말~4월 (벚꽃) · 11월 (단풍)", "스미다가와 불꽃대회 (7월)"],
+  "Osaka": ["4~5월 · 10~11월", "텐진마쓰리 (7월)"],
+  "Beijing": ["9~10월 (맑은 가을)", "춘절 묘회 (1~2월)"],
+  "Shanghai": ["3~4월 · 10~11월", "상하이 국제영화제 (6월)"],
+  "Hong Kong": ["10~12월 (건조하고 선선)", "홍콩 윈터페스타 (12월)"],
+  "Taipei": ["10~12월", "핑시 천등축제 (2월)"],
+  "Hanoi": ["10~12월 (건기 시작)", "뗏 설날 축제 (1~2월)"],
+  "Da Nang": ["2~5월 (건기·해수욕 최적)", "다낭 국제불꽃축제 (6월)"],
+  "Bangkok": ["11~2월 (건기)", "송끄란 물축제 (4월)"],
+  "Singapore": ["연중 (2~4월이 가장 쾌적)", "F1 싱가포르 나이트레이스 (9월)"],
+  "Kuala Lumpur": ["5~7월", "하리라야 축제 (이슬람력)"],
+  "Jakarta": ["5~9월 (건기)", "자카르타 페어 (6~7월)"],
+  "Manila": ["12~2월 (선선한 건기)", "시눌룩 축제 (1월)"],
+  "Delhi": ["10~3월 (더위 피함)", "디왈리 빛의 축제 (10~11월)"],
+  "Mumbai": ["11~2월", "가네쉬 차투르티 (8~9월)"],
+  "Dubai": ["11~3월 (야외활동 가능)", "두바이 쇼핑 페스티벌 (12~1월)"],
+  "Istanbul": ["4~5월 · 9~10월", "이스탄불 튤립축제 (4월)"],
+  "London": ["5~9월 (일조량 최대)", "노팅힐 카니발 (8월)"],
+  "Paris": ["4~6월 · 9~10월", "뉘 블랑슈 백야제 (10월)"],
+  "Rome": ["4~6월 · 9~10월", "로마 건국기념 축제 (4월)"],
+  "Barcelona": ["5~6월 · 9~10월", "라 메르세 축제 (9월)"],
+  "Madrid": ["4~6월 · 9~10월", "산 이시드로 축제 (5월)"],
+  "Berlin": ["5~9월", "베를린 빛의 축제 (10월)"],
+  "Amsterdam": ["4~5월 (튤립 시즌)", "킹스데이 (4월 27일)"],
+  "Prague": ["5~6월 · 9월", "프라하의 봄 음악제 (5~6월)"],
+  "Vienna": ["4~6월 · 9~10월", "크리스마스 마켓 (11~12월)"],
+  "Zurich": ["6~9월 (호수 수영 가능)", "취리히 페스트 (7월, 3년마다)"],
+  "Athens": ["4~6월 · 9~10월", "아테네 에피다우로스 축제 (6~8월)"],
+  "Cairo": ["10~4월 (더위 피함)", "아부심벨 태양축제 (2·10월)"],
+  "Cape Town": ["11~3월 (남반구 여름)", "케이프타운 미니스트럴 카니발 (1월)"],
+  "Nairobi": ["6~10월 (건기)", "마사이마라 대이동 (7~10월)"],
+  "Sydney": ["10~4월", "비비드 시드니 빛축제 (5~6월)"],
+  "Melbourne": ["11~3월", "호주오픈 테니스 (1월)"],
+  "Auckland": ["12~3월 (여름)", "오클랜드 등불축제 (2월)"],
+  "New York": ["4~6월 · 9~11월", "록펠러 트리 점등 (12월)"],
+  "Los Angeles": ["연중 (5~10월 최적)", "아카데미 시상식 (3월)"],
+  "San Francisco": ["8~10월 (안개 최소)", "프라이드 퍼레이드 (6월)"],
+  "Chicago": ["6~9월", "롤라팔루자 (8월)"],
+  "Toronto": ["5~9월", "토론토 국제영화제 (9월)"],
+  "Vancouver": ["6~9월 (건조한 여름)", "셀레브레이션 오브 라이트 불꽃 (7~8월)"],
+  "Mexico City": ["11~4월 (건기)", "죽은 자의 날 (11월 초)"],
+  "Honolulu": ["4~6월 · 9~11월", "알로하 페스티벌 (9월)"],
+  "Sao Paulo": ["3~5월 · 9~11월", "상파울루 카니발 (2월)"],
+  "Buenos Aires": ["3~5월 · 9~11월", "부에노스아이레스 탱고 축제 (8월)"],
+  "Rio de Janeiro": ["12~3월 (여름·해변)", "리우 카니발 (2월)"],
+  "Lima": ["12~4월 (해안 여름)", "페루 독립기념 축제 (7월)"],
+};
+
+/* 옷차림 카드 하단 — 여행 타이밍 가이드 렌더링 */
+function renderTravelTips(cityName) {
+  // 발음기호(São 등) 제거 후 비교해 OpenWeather 도시명과 매칭
+  const norm = (s) =>
+    s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  const key = Object.keys(CITY_TIPS).find((k) => norm(k) === norm(cityName));
+
+  if (!key) {
+    els.travelTips.classList.add("hidden");
+    return;
+  }
+  els.tipSeason.textContent = CITY_TIPS[key][0];
+  els.tipFest.textContent = CITY_TIPS[key][1];
+  els.travelTips.classList.remove("hidden");
+}
+
 function initWorldMap() {
   els.worldMap.innerHTML = WORLD_CITIES.map(([ko, en, lat, lon]) => {
     const x = (((lon + 180) / 360) * 100).toFixed(2);
@@ -127,16 +197,19 @@ function initWorldMap() {
 initWorldMap();
 
 /* ============================================================
-   1-2) 첫 화면 배경 — 한국을 상징하는 이미지 (남산서울타워)
-   Places 사진 API 로 불러오고, 데모 모드면 그라데이션 유지
+   1-2) 첫 화면 배경 — 한강 야경 (다리가 보이는 뷰)
+   반포대교 달빛무지개분수: 한강 다리 야경 사진이 가장 많은 명소.
+   Places 사진 API 로 불러오고, 데모 모드면 은하수 배경 유지
    ============================================================ */
 (async function loadKoreaDefaultPhoto() {
   if (isDemo.places) return;
   try {
-    const places = await getPlaces("남산서울타워", "Seoul");
+    const places = await getPlaces("반포대교 달빛무지개분수", "Seoul", false, {
+      lat: 37.5133, lon: 126.9967,
+    });
     setCityPhoto({ status: "fulfilled", value: places });
   } catch {
-    /* 실패해도 기본 그라데이션이 있으므로 무시 */
+    /* 실패해도 은하수 그라데이션이 있으므로 무시 */
   }
 })();
 
@@ -151,9 +224,10 @@ async function searchCity(city) {
 
     // ② 장소·영상은 서로 독립적이므로 병렬(Promise.allSettled) 호출
     const cityLabel = weather.name;
+    // 도시 좌표로 locationBias 를 걸어 '다른 나라 장소가 섞이는' 문제 방지
     const [attractions, restaurants, videos, forecast] = await Promise.allSettled([
-      getPlaces(`${cityLabel} 유명 관광지`, city),
-      getPlaces(`${cityLabel} 맛집`, city, true),
+      getPlaces(`${cityLabel} 유명 관광지`, city, false, weather.coord),
+      getPlaces(`${cityLabel} 맛집`, city, true, weather.coord),
       getVideos(cityLabel, city),
       getForecast(city, weather),
     ]);
@@ -161,6 +235,7 @@ async function searchCity(city) {
     renderWeather(weather);
     renderForecast(forecast);
     renderOutfit(weather.main.temp);
+    renderTravelTips(weather.name);
     renderPlaces(els.attractions, attractions, "🏛️");
     renderPlaces(els.restaurants, restaurants, "🍜");
     renderVideos(videos);
@@ -195,6 +270,7 @@ async function getWeather(city) {
   const d = await res.json();
   return {
     name: d.name,
+    coord: d.coord, // { lat, lon } — Places locationBias 에 사용
     country: d.sys.country,
     temp: undefined, // (아래 main 사용)
     main: { temp: d.main.temp, feels: d.main.feels_like, humidity: d.main.humidity },
@@ -377,8 +453,17 @@ function renderOutfit(temp) {
    5) Google Places API (New) — 관광지 & 평점 4.0+ 맛집
    POST places:searchText (브라우저 CORS 지원 엔드포인트)
    ============================================================ */
-async function getPlaces(query, city, restaurantOnly = false) {
+async function getPlaces(query, city, restaurantOnly = false, coord = null) {
   if (isDemo.places) return mockPlaces(city, restaurantOnly);
+
+  const body = { textQuery: query, languageCode: "ko", maxResultCount: 10 };
+  // ⚠️ locationBias 가 없으면 요청자 IP(한국) 기준으로 결과가 편향되어
+  //    다른 나라 검색에 한국 장소가 섞일 수 있음 → 도시 좌표 반경 50km 로 고정
+  if (coord) {
+    body.locationBias = {
+      circle: { center: { latitude: coord.lat, longitude: coord.lon }, radius: 50000 },
+    };
+  }
 
   const res = await fetch("https://places.googleapis.com/v1/places:searchText", {
     method: "POST",
@@ -389,7 +474,7 @@ async function getPlaces(query, city, restaurantOnly = false) {
       "X-Goog-FieldMask":
         "places.displayName,places.rating,places.userRatingCount,places.photos,places.googleMapsUri",
     },
-    body: JSON.stringify({ textQuery: query, languageCode: "ko", maxResultCount: 10 }),
+    body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error(`Places API 오류 (${res.status})`);
 
@@ -464,7 +549,7 @@ async function getVideos(cityLabel, city) {
 
   const url =
     `https://www.googleapis.com/youtube/v3/search` +
-    `?part=snippet&type=video&maxResults=3&safeSearch=moderate` +
+    `?part=snippet&type=video&maxResults=10&safeSearch=moderate` +
     `&q=${encodeURIComponent(cityLabel + " 여행 브이로그")}` +
     `&publishedAfter=${encodeURIComponent(sixMonthsAgo.toISOString())}` +
     `&relevanceLanguage=ko&key=${KEYS.youtube}`;
@@ -473,13 +558,28 @@ async function getVideos(cityLabel, city) {
   if (!res.ok) throw new Error(`YouTube API 오류 (${res.status})`);
 
   const data = await res.json();
-  return (data.items || []).map((v) => ({
+  const items = (data.items || []).map((v) => ({
     id: v.id.videoId,
     title: v.snippet.title,
+    desc: v.snippet.description || "",
     channel: v.snippet.channelTitle,
     thumb: v.snippet.thumbnails?.medium?.url || null,
     date: v.snippet.publishedAt?.slice(0, 10) || "",
   }));
+
+  // 🎯 관련도 검색이 다른 도시 영상을 섞는 문제 방지:
+  //    제목/설명에 도시명(영문 or 한글)이 실제로 포함된 영상만 선별
+  const koName = (WORLD_CITIES.find(
+    (c) => c[1].toLowerCase() === cityLabel.toLowerCase()
+  ) || [])[0];
+  const mentionsCity = (v) => {
+    const text = `${v.title} ${v.desc}`.toLowerCase();
+    return text.includes(cityLabel.toLowerCase()) || (koName && text.includes(koName));
+  };
+  const filtered = items.filter(mentionsCity);
+
+  // 필터 결과가 너무 적으면(1개 이하) 원본 순위로 보완
+  return (filtered.length >= 2 ? filtered : items).slice(0, 3);
 }
 
 function renderVideos(settled) {
