@@ -235,14 +235,14 @@ function renderTravelTips(cityName) {
     return;
   }
   const [best, bestWhy, avoid, avoidWhy, fests] = CITY_TIPS[key];
-  // 미니멀 디자인: 색상 박스 대신 가는 구분선 + 작은 컬러 도트
+  // 미니멀 디자인: 라벨과 기간을 같은 줄에 배치해 행 수를 줄이고 폰트 확대
   const row = (dot, label, value, why) => `
-    <div class="flex gap-3 py-3.5">
-      <span class="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full ${dot}"></span>
+    <div class="flex items-start gap-3 py-3.5">
+      <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dot}"></span>
+      <p class="w-[5.6rem] shrink-0 pt-0.5 text-xs font-medium tracking-wide text-white/45">${label}</p>
       <div class="min-w-0">
-        <p class="text-[11px] font-medium tracking-wide text-white/45">${label}</p>
-        <p class="mt-1 text-sm font-semibold leading-snug text-white/95">${escapeHtml(value)}</p>
-        ${why ? `<p class="mt-0.5 text-xs leading-relaxed text-white/50">${escapeHtml(why)}</p>` : ""}
+        <p class="text-[15px] font-bold leading-snug text-white/95">${escapeHtml(value)}</p>
+        ${why ? `<p class="mt-1 text-xs leading-relaxed text-white/50">${escapeHtml(why)}</p>` : ""}
       </div>
     </div>`;
   els.travelTips.innerHTML = `
