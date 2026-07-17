@@ -48,6 +48,8 @@ const els = {
   outfitTitle: $("outfitTitle"),
   outfitDesc: $("outfitDesc"),
   outfitTags: $("outfitTags"),
+  forecast: $("forecastRow"),
+  worldMap: $("worldMap"),
   attractions: $("attractionsList"),
   restaurants: $("restaurantsList"),
   videos: $("videosList"),
@@ -77,6 +79,75 @@ if (isDemo.weather || isDemo.places || isDemo.youtube) {
 }
 
 /* ============================================================
+   1-1) 인터랙티브 세계지도 — 주요 도시 40곳
+   [한글명, 검색어(영문), 위도, 경도]
+   등거리 투영: x = (경도+180)/360, y = (90-위도)/180
+   ============================================================ */
+const WORLD_CITIES = [
+  // 아시아
+  ["서울", "Seoul", 37.57, 126.98], ["도쿄", "Tokyo", 35.68, 139.69],
+  ["오사카", "Osaka", 34.69, 135.5], ["베이징", "Beijing", 39.9, 116.4],
+  ["상하이", "Shanghai", 31.23, 121.47], ["홍콩", "Hong Kong", 22.32, 114.17],
+  ["타이베이", "Taipei", 25.03, 121.57], ["하노이", "Hanoi", 21.03, 105.85],
+  ["다낭", "Da Nang", 16.05, 108.2], ["방콕", "Bangkok", 13.76, 100.5],
+  ["싱가포르", "Singapore", 1.35, 103.82], ["쿠알라룸푸르", "Kuala Lumpur", 3.14, 101.69],
+  ["자카르타", "Jakarta", -6.2, 106.85], ["마닐라", "Manila", 14.6, 120.98],
+  ["델리", "Delhi", 28.61, 77.21], ["뭄바이", "Mumbai", 19.08, 72.88],
+  ["두바이", "Dubai", 25.2, 55.27], ["이스탄불", "Istanbul", 41.01, 28.98],
+  // 유럽
+  ["런던", "London", 51.51, -0.13], ["파리", "Paris", 48.86, 2.35],
+  ["로마", "Rome", 41.9, 12.5], ["바르셀로나", "Barcelona", 41.39, 2.17],
+  ["마드리드", "Madrid", 40.42, -3.7], ["베를린", "Berlin", 52.52, 13.4],
+  ["암스테르담", "Amsterdam", 52.37, 4.9], ["프라하", "Prague", 50.08, 14.44],
+  ["빈", "Vienna", 48.21, 16.37], ["취리히", "Zurich", 47.38, 8.54],
+  ["아테네", "Athens", 37.98, 23.73],
+  // 아프리카 · 오세아니아
+  ["카이로", "Cairo", 30.04, 31.24], ["케이프타운", "Cape Town", -33.92, 18.42],
+  ["나이로비", "Nairobi", -1.29, 36.82], ["시드니", "Sydney", -33.87, 151.21],
+  ["멜버른", "Melbourne", -37.81, 144.96], ["오클랜드", "Auckland", -36.85, 174.76],
+  // 아메리카
+  ["뉴욕", "New York", 40.71, -74.01], ["로스앤젤레스", "Los Angeles", 34.05, -118.24],
+  ["샌프란시스코", "San Francisco", 37.77, -122.42], ["시카고", "Chicago", 41.88, -87.63],
+  ["토론토", "Toronto", 43.65, -79.38], ["밴쿠버", "Vancouver", 49.28, -123.12],
+  ["멕시코시티", "Mexico City", 19.43, -99.13], ["호놀룰루", "Honolulu", 21.31, -157.86],
+  ["상파울루", "Sao Paulo", -23.55, -46.63], ["부에노스아이레스", "Buenos Aires", -34.6, -58.38],
+  ["리우데자네이루", "Rio de Janeiro", -22.91, -43.17], ["리마", "Lima", -12.05, -77.04],
+];
+
+function initWorldMap() {
+  els.worldMap.innerHTML = WORLD_CITIES.map(([ko, en, lat, lon]) => {
+    const x = (((lon + 180) / 360) * 100).toFixed(2);
+    const y = (((90 - lat) / 180) * 100).toFixed(2);
+    return `<button class="city-dot" style="left:${x}%;top:${y}%"
+      data-city="${escapeHtml(en)}" aria-label="${ko} 날씨 검색">
+      <span class="dot-label">${ko}</span>
+    </button>`;
+  }).join("");
+
+  els.worldMap.addEventListener("click", (e) => {
+    const dot = e.target.closest(".city-dot");
+    if (!dot) return;
+    els.input.value = dot.dataset.city;
+    searchCity(dot.dataset.city);
+  });
+}
+initWorldMap();
+
+/* ============================================================
+   1-2) 첫 화면 배경 — 한국을 상징하는 이미지 (경복궁)
+   Places 사진 API 로 불러오고, 데모 모드면 그라데이션 유지
+   ============================================================ */
+(async function loadKoreaDefaultPhoto() {
+  if (isDemo.places) return;
+  try {
+    const places = await getPlaces("경복궁 서울", "Seoul");
+    setCityPhoto({ status: "fulfilled", value: places });
+  } catch {
+    /* 실패해도 기본 그라데이션이 있으므로 무시 */
+  }
+})();
+
+/* ============================================================
    2) 메인 검색 플로우 — 3개 API 병렬 호출
    ============================================================ */
 async function searchCity(city) {
@@ -87,13 +158,15 @@ async function searchCity(city) {
 
     // ② 장소·영상은 서로 독립적이므로 병렬(Promise.allSettled) 호출
     const cityLabel = weather.name;
-    const [attractions, restaurants, videos] = await Promise.allSettled([
+    const [attractions, restaurants, videos, forecast] = await Promise.allSettled([
       getPlaces(`${cityLabel} 유명 관광지`, city),
       getPlaces(`${cityLabel} 맛집`, city, true),
       getVideos(cityLabel, city),
+      getForecast(city, weather),
     ]);
 
     renderWeather(weather);
+    renderForecast(forecast);
     renderOutfit(weather.main.temp);
     renderPlaces(els.attractions, attractions, "🏛️");
     renderPlaces(els.restaurants, restaurants, "🍜");
@@ -206,6 +279,81 @@ function weatherIconOf(main, night) {
     Smoke: "fa-smog", Dust: "fa-smog", Sand: "fa-smog",
   };
   return `<i class="fa-solid ${map[main] || "fa-cloud"}"></i>`;
+}
+
+/* ============================================================
+   3-1) 주간 날씨 — OpenWeatherMap 5일/3시간 예보를 일별로 집계
+   (무료 플랜에서 제공되는 forecast 엔드포인트 사용)
+   ============================================================ */
+async function getForecast(city, weather) {
+  if (isDemo.weather) return mockForecast(weather);
+
+  const url =
+    `https://api.openweathermap.org/data/2.5/forecast` +
+    `?q=${encodeURIComponent(city)}&units=metric&lang=kr&appid=${KEYS.weather}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Forecast API 오류 (${res.status})`);
+  const d = await res.json();
+  const tz = d.city.timezone;
+
+  // 3시간 간격 데이터를 '현지 날짜' 기준으로 묶어 일별 최저/최고 계산
+  const byDay = {};
+  d.list.forEach((item) => {
+    const key = new Date((item.dt + tz) * 1000).toISOString().slice(0, 10);
+    (byDay[key] = byDay[key] || []).push(item);
+  });
+
+  return Object.entries(byDay).slice(0, 6).map(([date, items]) => {
+    const temps = items.map((i) => i.main.temp);
+    // 대표 날씨: 현지 정오에 가장 가까운 시간대의 상태
+    const rep = items.reduce((a, b) =>
+      Math.abs(new Date((a.dt + tz) * 1000).getUTCHours() - 12) <=
+      Math.abs(new Date((b.dt + tz) * 1000).getUTCHours() - 12) ? a : b
+    );
+    return {
+      date,
+      min: Math.round(Math.min(...temps)),
+      max: Math.round(Math.max(...temps)),
+      main: rep.weather[0].main,
+      desc: rep.weather[0].description,
+    };
+  });
+}
+
+function renderForecast(settled) {
+  if (settled.status === "rejected" || !settled.value.length) {
+    els.forecast.innerHTML = sectionError("주간 예보를 불러오지 못했어요.");
+    return;
+  }
+  const days = ["일", "월", "화", "수", "목", "금", "토"];
+  els.forecast.innerHTML = settled.value
+    .map((f, i) => {
+      const day = i === 0 ? "오늘" : days[new Date(f.date + "T00:00:00Z").getUTCDay()];
+      return `
+      <div class="forecast-chip" title="${escapeHtml(f.desc)}">
+        <p class="fc-day">${day}</p>
+        <p class="fc-icon">${weatherIconOf(f.main, false)}</p>
+        <p class="fc-max">${f.max}°</p>
+        <p class="fc-min">${f.min}°</p>
+      </div>`;
+    })
+    .join("");
+}
+
+function mockForecast(weather) {
+  const base = weather ? Math.round(weather.main.temp) : 21;
+  const mains = [weather?.weatherMain || "Clear", "Clouds", "Clear", "Rain", "Clouds", "Clear"];
+  const today = new Date();
+  return mains.map((main, i) => {
+    const d = new Date(today.getTime() + i * 86400000);
+    return {
+      date: d.toISOString().slice(0, 10),
+      min: base - 3 + ((i * 2) % 3),
+      max: base + 2 + (i % 3),
+      main,
+      desc: "샘플 예보",
+    };
+  });
 }
 
 /* ============================================================

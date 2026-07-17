@@ -76,6 +76,23 @@
       </div>
     </section>
 
+    <!-- ===================== 인터랙티브 세계지도 ===================== -->
+    <section class="mx-auto mb-8 max-w-4xl">
+      <div class="glass-card rounded-3xl p-4 sm:p-5">
+        <div class="mb-3 flex flex-wrap items-center justify-between gap-2 px-1">
+          <h3 class="flex items-center gap-2 text-sm font-bold">
+            <i class="fa-solid fa-map-location-dot text-white/80"></i> 월드맵에서 바로 선택
+          </h3>
+          <span class="text-[11px] text-white/50">
+            <span class="mr-1 inline-block h-2 w-2 rounded-full bg-amber-300 align-middle"></span>
+            점을 클릭하면 해당 도시를 검색합니다
+          </span>
+        </div>
+        <!-- 도시 점(dot)은 script.js 에서 위도/경도 → % 좌표로 동적 생성 -->
+        <div id="worldMap" class="world-map" role="group" aria-label="세계 주요 도시 지도"></div>
+      </div>
+    </section>
+
     <!-- 데모 모드 안내 배너 (API 키가 없을 때 표시) -->
     <div id="demoBanner" class="mx-auto mb-8 hidden max-w-xl rounded-2xl border border-amber-300/30 bg-amber-400/10 px-5 py-3 text-center text-sm text-amber-100 backdrop-blur">
       <i class="fa-solid fa-flask mr-1"></i>
@@ -142,6 +159,16 @@
                 바람 <b id="wind" class="block text-sm text-white">-- m/s</b>
               </div>
             </div>
+          </div>
+
+          <div class="my-6 h-px bg-white/15"></div>
+
+          <!-- 주간 날씨 (5일 예보) -->
+          <div>
+            <p class="mb-3 text-xs font-bold text-white/70">
+              <i class="fa-solid fa-calendar-days mr-1"></i> 주간 날씨
+            </p>
+            <div id="forecastRow" class="flex gap-2 overflow-x-auto pb-1"><!-- 일별 예보 칩 --></div>
           </div>
         </section>
 

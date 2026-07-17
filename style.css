@@ -239,6 +239,107 @@ body {
 }
 .video-card:hover .play-badge { opacity: 1; }
 
+/* ---------- 인터랙티브 세계지도 ----------
+   등거리 투영(equirectangular) 지도 위에 위도/경도를 %좌표로
+   변환해 도시 점을 배치. 점 클릭 → 해당 도시 검색. */
+.world-map {
+  position: relative;
+  aspect-ratio: 2 / 1;
+  border-radius: 1.2rem;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(2, 6, 23, 0.5), rgba(2, 6, 23, 0.35)),
+    url("https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1280px-Equirectangular_projection_SW.jpg")
+      center / cover no-repeat;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.city-dot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  cursor: pointer;
+  z-index: 1;
+}
+/* 실제 보이는 점 */
+.city-dot::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 9999px;
+  background: #fcd34d;
+  box-shadow: 0 0 6px rgba(252, 211, 77, 0.9), 0 0 14px rgba(252, 211, 77, 0.4);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+/* 은은한 펄스 링 */
+.city-dot::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(252, 211, 77, 0.5);
+  animation: pulse-ring 2.6s ease-out infinite;
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(0.5); opacity: 0.9; }
+  70%  { transform: scale(1.5); opacity: 0; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+.city-dot:hover::before,
+.city-dot:focus-visible::before {
+  transform: scale(1.6);
+  background: #ffffff;
+}
+/* 호버 시 도시 이름 라벨 */
+.city-dot .dot-label {
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  padding: 3px 9px;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 2;
+}
+.city-dot:hover .dot-label,
+.city-dot:focus-visible .dot-label {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ---------- 주간 날씨 예보 칩 ---------- */
+.forecast-chip {
+  flex: 1 0 74px;
+  min-width: 74px;
+  text-align: center;
+  padding: 0.7rem 0.4rem;
+  border-radius: 1rem;
+  background: rgba(255,255,255,0.09);
+  border: 1px solid rgba(255,255,255,0.13);
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+.forecast-chip:hover {
+  background: rgba(255,255,255,0.18);
+  transform: translateY(-3px);
+}
+.forecast-chip .fc-day  { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.75); }
+.forecast-chip .fc-icon { font-size: 1.15rem; margin: 0.35rem 0; }
+.forecast-chip .fc-max  { font-size: 13px; font-weight: 800; }
+.forecast-chip .fc-min  { font-size: 11px; color: rgba(255,255,255,0.55); }
+
 /* ---------- 별점 ---------- */
 .stars { color: #fbbf24; letter-spacing: 1px; font-size: 0.72rem; }
 
